@@ -15,7 +15,10 @@ async def root():
 
 try:
     @app.post("/generate")
-    async def generate_slides(youtube_url: str = Form(...)):
+    async def generate_slides(
+        youtube_url: str = Form(...),
+        num_slides: int = Form(5)  # default is 5 slides
+    ):
         video_id = str(uuid.uuid4())
         
         video_path = download_video_from_youtube(youtube_url, video_id)
@@ -23,7 +26,7 @@ try:
             return {"error": "Failed to download video. Please check the URL."}
         transcript = transcribe_video(video_path)
         # print(f"Transcript: {transcript}")
-        summaries = summarize_text(transcript)
+        summaries = summarize_text(transcript, num_slides)
         # print(f"Summaries: {summaries}")
         image_paths = extract_key_frames(video_path, summaries)
         pdf_path = generate_slide_pdf(summaries, image_paths, video_id)
