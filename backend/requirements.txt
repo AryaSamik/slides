@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pytube
+openai-whisper
+moviepy
+fpdf
+python-multipart
+aiofiles
