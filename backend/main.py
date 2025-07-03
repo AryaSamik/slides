@@ -24,10 +24,10 @@ async def generate_slides(
     video_path = download_video_from_youtube(youtube_url, video_id)
     if not video_path:
         return {"error": "Failed to download video. Please check the URL."}
-    segments = transcribe_video(video_path)
-        # print(f"Transcript: {transcript}")
-    summaries = summarize_text(segments, num_slides)
-        # print(f"Summaries: {summaries}")
+    transcript_data = transcribe_video(video_path)
+    segments = transcript_data["segments"]
+    duration = transcript_data["duration"]
+    summaries = summarize_text(segments, num_slides, duration)
     image_paths = extract_key_frames(video_path, summaries)
     pdf_path = generate_slide_pdf(summaries, image_paths, video_id)
 

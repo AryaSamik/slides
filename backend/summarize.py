@@ -1,15 +1,21 @@
-def summarize_text(segments, num_slides):
-    num_segments = len(segments)
-    chunk_size = num_segments // num_slides
+def summarize_text(segments, num_slides, total_duration):
+    slide_duration = total_duration // num_slides
     summaries = []
 
     for i in range(num_slides):
-        start_idx = i * chunk_size
-        end_idx = (i + 1) * chunk_size if i < num_slides - 1 else num_segments
-        chunk = segments[start_idx:end_idx]
+        start_time = i * slide_duration
+        end_time = (i + 1) * slide_duration
+
+        chunk = [
+            seg for seg in segments
+            if seg["start"] >= start_time and seg["start"] < end_time
+        ]
+
+        if not chunk:
+            continue  # skip empty slide
 
         chunk_text = " ".join(seg["text"] for seg in chunk)
-        timestamp = chunk[0]["start"]  # REAL timestamp in seconds
+        timestamp = chunk[0]["start"]
 
         summaries.append({
             "text": chunk_text,
