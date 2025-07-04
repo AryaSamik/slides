@@ -1,5 +1,7 @@
 import yt_dlp
 import re
+from transformers import pipeline
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 def format_timestamp(seconds):
     hrs = int(seconds // 3600)
@@ -27,3 +29,8 @@ def get_youtube_thumbnail(video_url):
         return None
     video_id = match.group(1)
     return f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+
+def generate_summary(text):
+    if len(text) > 1000:
+        text = text[:1000]  # truncate for safety
+    return summarizer(text, max_length=100, min_length=30, do_sample=False)[0]["summary_text"]

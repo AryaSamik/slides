@@ -1,3 +1,5 @@
+from utils import generate_summary
+
 def summarize_text(segments, num_slides, total_duration):
     slide_duration = total_duration // num_slides
     summaries = []
@@ -17,8 +19,13 @@ def summarize_text(segments, num_slides, total_duration):
         chunk_text = " ".join(seg["text"] for seg in chunk)
         timestamp = chunk[0]["start"]
 
+        try:
+            summary = generate_summary(chunk_text)
+        except Exception as e:
+            summary = chunk_text[:200] + "..."  # fallback
+
         summaries.append({
-            "text": chunk_text,
+            "text": summary,
             "timestamp": timestamp
         })
 
