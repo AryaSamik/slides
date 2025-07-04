@@ -7,6 +7,7 @@ from generate_pdf import generate_slide_pdf
 from pytube import YouTube
 import requests
 from utils import get_youtube_thumbnail, get_video_title
+from fastapi.staticfiles import StaticFiles
 
 import uuid
 
@@ -16,6 +17,7 @@ app = FastAPI()
 async def root():
     return {"message": "Welcome to the Slide Generator API!"}
 
+app.mount("/output", StaticFiles(directory="output"), name="output")
 
 @app.post("/generate")
 async def generate_slides(
@@ -45,4 +47,7 @@ async def generate_slides(
     image_paths = extract_key_frames(video_path, summaries)
     pdf_path = generate_slide_pdf(summaries, image_paths, video_id, youtube_url, video_title, thumbnail_path)
 
-    return {"pdf_url": f"/output/{pdf_path}"}
+    return {
+        "pdf_url": f"/output/{pdf_path}",
+        "download_link": f"http://localhost:8000/output/{pdf_path}"
+    }
