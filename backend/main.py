@@ -4,6 +4,9 @@ from transcribe import transcribe_video
 from summarize import summarize_text
 from extract_frames import extract_key_frames
 from generate_pdf import generate_slide_pdf
+from pytube import YouTube
+import requests
+from utils import get_youtube_thumbnail, get_video_title
 
 import uuid
 
@@ -20,7 +23,18 @@ async def generate_slides(
     num_slides: int = Form(5)  # default is 5 slides
 ):
     video_id = str(uuid.uuid4())
-        
+    thumbnail_url = get_youtube_thumbnail(youtube_url)
+    video_title = get_video_title(youtube_url)
+
+    # Download thumbnail image
+    if thumbnail_url:
+        thumbnail_path = f"output/{video_id}_thumb.jpg"
+    try:
+        with open(thumbnail_path, 'wb') as f:
+            f.write(requests.get(thumbnail_url).content)
+    except:
+        thumbnail_path = None
+
     video_path = download_video_from_youtube(youtube_url, video_id)
     if not video_path:
         return {"error": "Failed to download video. Please check the URL."}
@@ -29,6 +43,6 @@ async def generate_slides(
     duration = transcript_data["duration"]
     summaries = summarize_text(segments, num_slides, duration)
     image_paths = extract_key_frames(video_path, summaries)
-    pdf_path = generate_slide_pdf(summaries, image_paths, video_id)
+    pdf_path = generate_slide_pdf(summaries, image_paths, video_id, youtube_url, video_title, thumbnail_path)
 
     return {"pdf_url": f"/output/{pdf_path}"}
