@@ -50,7 +50,7 @@ def generate_slide_pdf(summaries, images, video_id, youtube_url, video_title, th
 
         #Image
         if i < len(images):
-            pdf.image(images[i], x=10, y=60, w=180)
+            pdf.image(images[i], x=10, y=120, w=180)
 
     output_path = f"output/{video_id}.pdf"
     pdf.output(output_path)
