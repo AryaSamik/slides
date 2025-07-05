@@ -8,7 +8,7 @@ def transcribe_video(video_path):
     
     clip = VideoFileClip(video_path)
     duration = clip.duration  # duration in seconds
-    clip.reader.close()
+    clip.close()
 
     return {
         "segments": result['segments'], # har segment mein start, end, text

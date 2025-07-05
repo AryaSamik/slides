@@ -1,6 +1,9 @@
 import yt_dlp
 import re
 from transformers import pipeline
+import shutil
+import os
+
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 def format_timestamp(seconds):
@@ -34,3 +37,7 @@ def generate_summary(text):
     if len(text) > 1000:
         text = text[:1000]  # truncate for safety
     return summarizer(text, max_length=100, min_length=30, do_sample=False)[0]["summary_text"]
+
+def cleanup_temp_files(temp_dir):
+    if os.path.exists(temp_dir):
+        shutil.rmtree(temp_dir)

@@ -1,7 +1,7 @@
 import subprocess
 
 def download_video_from_youtube(url, video_id):
-    output_path = f"temp/{video_id}.mp4"
+    output_path = f"temp/{video_id}/{video_id}.mp4"
     command = [
         "yt-dlp",
         "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
