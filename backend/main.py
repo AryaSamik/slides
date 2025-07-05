@@ -11,8 +11,18 @@ from fastapi.staticfiles import StaticFiles
 from utils import cleanup_temp_files
 import uuid
 import time
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# Allow frontend origin (adjust the port if needed)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or "*" for all (not recommended for prod)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
