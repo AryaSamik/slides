@@ -4,7 +4,7 @@ from transformers import pipeline
 import shutil
 import os
 
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
 def format_timestamp(seconds):
     hrs = int(seconds // 3600)

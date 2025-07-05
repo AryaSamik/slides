@@ -40,9 +40,14 @@ async def generate_slides(
         os.mkdir(f"temp/{video_id}")
     if not os.path.exists(f"output/{video_id}"):
         os.mkdir(f"output/{video_id}")
+    start= time.time()
     thumbnail_url = get_youtube_thumbnail(youtube_url)
+    print("Thumbnail URL fetch time: ", time.time() - start)
+    start = time.time()
     video_title = get_video_title(youtube_url)
+    print("Video title fetch time: ", time.time() - start)
 
+    start = time.time()
     # Download thumbnail image
     if thumbnail_url:
         thumbnail_path = f"temp/{video_id}/thumbnail.jpg"
@@ -52,16 +57,27 @@ async def generate_slides(
     except Exception as e:
         print(f"Error downloading thumbnail: {e}")
         thumbnail_path = None
+    print("Thumbnail download time: ", time.time() - start)
 
+    start = time.time()
     video_path = download_video_from_youtube(youtube_url, video_id)
+    print("Video download time: ", time.time() - start)
     if not video_path:
         return {"error": "Failed to download video. Please check the URL."}
+    start = time.time()
     transcript_data = transcribe_video(video_path)
+    print("Transcription time: ", time.time() - start)
     segments = transcript_data["segments"]
     duration = transcript_data["duration"]
+    start = time.time()
     summaries = summarize_text(segments, num_slides, duration)
+    print("Summarization time: ", time.time() - start)
+    start = time.time()
     image_paths = extract_key_frames(video_path, summaries, video_id)
+    print("Frame extraction time: ", time.time() - start)
+    start = time.time()
     pdf_path = generate_slide_pdf(summaries, image_paths, video_id, youtube_url, video_title, thumbnail_path)
+    print("PDF generation time: ", time.time() - start)
 
     time.sleep(1)  # short pause before deleting
 
