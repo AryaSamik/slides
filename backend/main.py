@@ -13,13 +13,14 @@ import uuid
 import time
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from db import users_collection
-from auth import hash_password, verify_password, create_access_token
+from auth import hash_password, verify_password, create_access_token, decode_access_token
 from models import UserIn
 from bson import ObjectId
 from dotenv import load_dotenv
 load_dotenv()
+from auth import token_blacklist
 
 app = FastAPI()
 
@@ -99,3 +100,14 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     
     token = create_access_token({"sub": user["email"]})
     return {"access_token": token, "token_type": "bearer"}
+
+@app.post("/logout")
+async def logout(token: str = Depends(OAuth2PasswordBearer(tokenUrl="login"))):
+    # Optionally decode and verify token here
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Blacklist the token
+    token_blacklist.add(token)
+    return {"message": "Logout successful"}

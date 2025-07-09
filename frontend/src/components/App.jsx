@@ -1,6 +1,7 @@
 import SignupForm from './SignupForm';
 import LoginForm from './LoginForm';
 import Generator from './Generate';
+import Logout from './Logout';
 
 function App() {
 
@@ -11,6 +12,7 @@ function App() {
       <LoginForm />
       <SignupForm />
       <Generator />
+      <Logout />
     </>
   );
 }
