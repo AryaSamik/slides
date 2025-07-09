@@ -33,6 +33,7 @@ function Generator() {
 
   return (
     <>
+      <p>Enter Youtube Video URL and number of slides.</p>
       <div>
         <form onSubmit={handleSubmit}>
           <input
