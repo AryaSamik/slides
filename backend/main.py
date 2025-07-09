@@ -12,6 +12,14 @@ from utils import cleanup_temp_files
 import uuid
 import time
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import HTTPException, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from db import users_collection
+from auth import hash_password, verify_password, create_access_token
+from models import UserIn
+from bson import ObjectId
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
 
@@ -72,3 +80,22 @@ async def generate_slides(
         "pdf_url": f"/output/{pdf_path}",
         "download_link": f"http://localhost:8000/output/{pdf_path}"
     }
+
+@app.post("/signup")
+async def signup(user: UserIn):
+    if await users_collection.find_one({"email": user.email}):
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    hashed_pw = hash_password(user.password)
+    result = await users_collection.insert_one({"email": user.email, "password": hashed_pw})
+    # print(result)
+    return {"message": "User created"}
+
+@app.post("/login")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = await users_collection.find_one({"email": form_data.username})
+    if not user or not verify_password(form_data.password, user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    token = create_access_token({"sub": user["email"]})
+    return {"access_token": token, "token_type": "bearer"}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-function App() {
+function Generator() {
   const [youtubeURL, setYoutubeURL] = useState("");
   const [numSlides, setNumSlides] = useState(5);
   const [pdfUrl, setPdfUrl] = useState("");
@@ -34,8 +34,6 @@ function App() {
   return (
     <>
       <div>
-        <h1>YouTube Slide Generator</h1>
-
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -69,4 +67,4 @@ function App() {
   );
 }
 
-export default App;
+export default Generator;
