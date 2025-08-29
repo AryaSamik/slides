@@ -8,7 +8,15 @@ def generate_slide_pdf(summaries, images, video_id, youtube_url, video_title, th
 
     pdf.set_auto_page_break(auto=True, margin=15)
 
-    # 🔥 Cover slide
+    # Add DejaVu font (Unicode-safe)
+    font_path = "fonts/DejaVuSans.ttf"
+    if os.path.exists(font_path):
+        pdf.add_font("DejaVu", "", font_path, uni=True)
+        default_font = "DejaVu"
+    else:
+        default_font = "Arial"  # fallback if font missing
+
+    # Cover slide
     pdf.add_page()
 
     # Add thumbnail image
@@ -16,10 +24,10 @@ def generate_slide_pdf(summaries, images, video_id, youtube_url, video_title, th
         pdf.image(thumbnail_path, x=30, y=20, w=150)
         pdf.ln(90)  # space after image
     else:
-        pdf.set_font("Arial", 'B', 20)
+        pdf.set_font(default_font, 'B', 20)
         pdf.cell(200, 20, txt="Slide Deck", ln=True, align='C')
 
-    pdf.set_font("Arial", '', 14)
+    pdf.set_font(default_font, '', 14)
     pdf.ln(10)
     pdf.multi_cell(0, 10, txt=f"Title: {video_title}")
     pdf.ln(2)
@@ -34,23 +42,24 @@ def generate_slide_pdf(summaries, images, video_id, youtube_url, video_title, th
 
     for i, point in enumerate(summaries):
         pdf.add_page()
-        pdf.set_font("Arial", size=16)
+        pdf.set_font(default_font, size=16)
 
         #Slide title
         pdf.cell(200, 10, txt=f"Slide {i+1}", ln=True)
 
         #Add timestamp
         timestamp_str = format_timestamp(point['timestamp'])
-        pdf.set_font("Arial", size=12)
+        pdf.set_font(default_font, size=12)
         pdf.cell(200, 10, txt=f"Timestamp: {timestamp_str}", ln=True)
 
         #Slide text
-        pdf.set_font("Arial", size=14)
+        pdf.set_font(default_font, size=14)
         pdf.multi_cell(0, 10, txt=point['text'])
 
         #Image
         if i < len(images):
-            pdf.image(images[i], x=10, y=120, w=180)
+            current_y = pdf.get_y()+10
+            pdf.image(images[i], x=10, y=current_y, w=180)
 
     output_path = f"output/{video_id}/{video_id}.pdf"
     pdf.output(output_path)

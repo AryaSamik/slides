@@ -1,10 +1,14 @@
 import yt_dlp
 import re
-from transformers import pipeline
+# from transformers import pipeline
 import shutil
 import os
+from dotenv import load_dotenv
+load_dotenv()
+from google import genai 
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+# summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 def format_timestamp(seconds):
     hrs = int(seconds // 3600)
@@ -34,9 +38,15 @@ def get_youtube_thumbnail(video_url):
     return f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
 
 def generate_summary(text):
-    if len(text) > 1000:
-        text = text[:1000]  # truncate for safety
-    return summarizer(text, max_length=100, min_length=30, do_sample=False)[0]["summary_text"]
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=text+os.getenv("GEMINI_PROMPT"),
+    )
+    # print("Gemini response:", response.text)
+    return response.text.strip()
+# if len(text) > 1000:
+#         text = text[:1000]  # truncate for safety
+#     return summarizer(text, max_length=100, min_length=30, do_sample=False)[0]["summary_text"]
 
 def cleanup_temp_files(temp_dir):
     if os.path.exists(temp_dir):

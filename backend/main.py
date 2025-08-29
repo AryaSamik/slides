@@ -21,6 +21,7 @@ from bson import ObjectId
 from dotenv import load_dotenv
 load_dotenv()
 from auth import token_blacklist
+# import time
 
 app = FastAPI()
 
@@ -65,10 +66,16 @@ async def generate_slides(
     video_path = download_video_from_youtube(youtube_url, video_id)
     if not video_path:
         return {"error": "Failed to download video. Please check the URL."}
+    # t1=time.time()
     transcript_data = transcribe_video(video_path)
+    # t2=time.time()
+    # print("Time taken:",t2-t1)
     segments = transcript_data["segments"]
     duration = transcript_data["duration"]
+    # t1=time.time()
     summaries = summarize_text(segments, num_slides, duration)
+    # t2=time.time()
+    # print("Time taken:",t2-t1)
     image_paths = extract_key_frames(video_path, summaries, video_id)
     pdf_path = generate_slide_pdf(summaries, image_paths, video_id, youtube_url, video_title, thumbnail_path)
 

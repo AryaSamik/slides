@@ -1,7 +1,7 @@
 import whisper
 from moviepy import VideoFileClip
 
-model = whisper.load_model("base")
+model = whisper.load_model("tiny")
 
 def transcribe_video(video_path):
     result = model.transcribe(video_path)
